@@ -1,0 +1,18 @@
+{
+  "name": "api-gestion-de-tareas",
+  "version": "1.0.0",
+  "description": "API REST para gestionar tareas y categorias con Express y MongoDB",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

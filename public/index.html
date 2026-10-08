@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gestor de tareas MVC">
+    <title>Todoist | Gestión de tareas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand"><span class="brand-mark">✓</span><span>todo<span class="brand-accent">list</span></span>
+            </div>
+            <div class="sidebar-label">Organiza tu día</div>
+            <nav class="main-nav" aria-label="Filtros de tareas">
+                <button class="nav-item is-active" data-filter="all"><span
+                        class="nav-icon">▦</span><span>Todas</span><strong id="allCount">0</strong></button>
+                <button class="nav-item" data-filter="pending"><span
+                        class="nav-icon">◷</span><span>Pendientes</span><strong id="pendingCount">0</strong></button>
+                <button class="nav-item" data-filter="completed"><span
+                        class="nav-icon">✓</span><span>Completadas</span><strong id="completedCount">0</strong></button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="progress-card">
+                    <div class="progress-heading"><span>Progreso semanal</span><span id="progressValue">0%</span></div>
+                    <div class="progress-track"><span id="progressBar"></span></div>
+                    <p id="progressText">Empieza creando una tarea</p>
+                </div>
+                <p class="api-status"><span id="statusDot"></span><span id="statusText">Conectando...</span></p>
+            </div>
+        </aside>
+
+        <main class="content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Panel de control</p>
+                    <h1>Mis tareas</h1>
+                </div>
+                <button class="primary-button" id="openCreate"><span>+</span> Nueva tarea</button>
+            </header>
+
+            <section class="welcome-banner">
+                <div>
+                    <p class="banner-kicker">Tu espacio de enfoque</p>
+                    <h2>Hazlo simple.<br><em>Hazlo hoy.</em></h2>
+                    <p class="banner-copy">Una tarea a la vez es suficiente para avanzar.</p>
+                </div>
+                <div class="banner-shape" aria-hidden="true"><span>✓</span></div>
+            </section>
+
+            <section class="toolbar" aria-label="Herramientas de tareas">
+                <div class="view-tabs"><button class="tab is-active" data-filter="all">Todas</button><button class="tab"
+                        data-filter="pending">Pendientes</button><button class="tab"
+                        data-filter="completed">Completadas</button></div>
+                <div class="toolbar-actions">
+                    <label class="category-filter"><span>Categoría</span><select id="categoryFilter"
+                            aria-label="Filtrar por categoría">
+                            <option value="all">Todas</option>
+                        </select></label>
+                    <label class="search-box"><span>⌕</span><input type="search" id="searchInput"
+                            placeholder="Buscar tareas..." aria-label="Buscar tareas"></label>
+                </div>
+            </section>
+
+            <section class="task-section">
+                <div class="section-heading">
+                    <h2 id="listTitle">Todas las tareas</h2><span id="listSummary">0 tareas</span>
+                </div>
+                <div class="task-list" id="taskList"></div>
+            </section>
+            <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        </main>
+    </div>
+
+    <dialog id="taskDialog" class="task-dialog">
+        <form id="taskForm" method="dialog">
+            <div class="dialog-heading">
+                <div>
+                    <p class="eyebrow" id="dialogEyebrow">Nueva tarea</p>
+                    <h2 id="dialogTitle">Crea una tarea</h2>
+                </div><button type="button" class="close-button" id="closeDialog" aria-label="Cerrar">×</button>
+            </div>
+            <input type="hidden" id="taskId">
+            <label>Título<input id="titleInput" name="titulo" required minlength="3" maxlength="120"
+                    placeholder="Ej. Preparar presentación"></label>
+            <label>Descripción<textarea id="descriptionInput" name="descripcion" required maxlength="1000" rows="4"
+                    placeholder="¿Qué necesitas hacer?"></textarea></label>
+            <label>Categoría<div class="category-row"><select id="categoryInput" name="categoria"
+                        required></select><button type="button" class="secondary-button" id="openCategory">+
+                        Añadir</button></div></label>
+            <p class="form-error" id="formError"></p>
+            <div class="dialog-actions"><button type="button" class="secondary-button"
+                    id="cancelDialog">Cancelar</button><button class="primary-button" type="submit">Guardar
+                    tarea</button></div>
+        </form>
+    </dialog>
+
+    <dialog id="categoryDialog" class="task-dialog small-dialog">
+        <form id="categoryForm" method="dialog">
+            <div class="dialog-heading">
+                <div>
+                    <p class="eyebrow">Nueva categoría</p>
+                    <h2>Un nuevo espacio</h2>
+                </div><button type="button" class="close-button" id="closeCategory" aria-label="Cerrar">×</button>
+            </div><label>Categoría existente<div class="category-row"><select id="existingCategory" aria-label="Seleccionar categoría para editar"><option value="">Selecciona una categoría</option></select><button type="button" class="secondary-button" id="loadCategory">Editar</button></div></label><label>Nombre<input id="categoryName" required minlength="2" maxlength="60"
+                    placeholder="Ej. Personal"></label><label>Descripción<textarea id="categoryDescription" required
+                    maxlength="300" rows="3" placeholder="¿Qué reúne esta categoría?"></textarea></label>
+            <p class="form-error" id="categoryError"></p>
+                <div class="dialog-actions"><button type="button" class="secondary-button"
+                    id="cancelCategory">Cancelar</button><button class="primary-button" id="saveCategory" type="submit">Crear
+                    categoría</button></div>
+        </form>
+    </dialog>
+    <script src="/app.js"></script>
+</body>
+
+</html>
